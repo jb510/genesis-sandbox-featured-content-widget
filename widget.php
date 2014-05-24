@@ -1574,8 +1574,9 @@ function gsfcSave(t) {
 				wp_cache_set( $cache_key, array(), 'get_taxonomies', apply_filters( 'gsfc_get_taxonomies_cache_expires', 0 ) );
 			}
 		} else {
-			$term = get_taxonomies( $args, $output, $operator );
+			$taxonomies = get_taxonomies( $args, $output, $operator );
 		}
+		return $taxonomies;
 	}
     
     /**
