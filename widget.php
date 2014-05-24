@@ -36,26 +36,26 @@ class GS_Featured_Content extends WP_Widget {
     public static $base = 'featured-content';
     public static $self;
     
-	/**
-	 * Holds widget settings defaults, populated in constructor.
-	 *
-	 * @var array
-	 */
-	protected $defaults;
+    /**
+     * Holds widget settings defaults, populated in constructor.
+     *
+     * @var array
+     */
+    protected $defaults;
 
-	/**
-	 * Constructor. Set the default widget options and create widget.
-	 *
-	 * @since 0.1.8
-	 */
-	function __construct() {
+    /**
+     * Constructor. Set the default widget options and create widget.
+     *
+     * @since 0.1.8
+     */
+    function __construct() {
         GS_Featured_Content::$self = $this;
         
         $gfwa = genesis_get_option( 'gsfc_gfwa' );
         if ( $gfwa )
             GS_Featured_Content::$base = 'featured-post';
         
-		$this->defaults = apply_filters(
+        $this->defaults = apply_filters(
             'gsfc_defaults',
             array(
                 'add_column_classes'      => 0,
@@ -122,16 +122,16 @@ class GS_Featured_Content extends WP_Widget {
             )
         );
 
-		$widget_ops = array(
-			'classname'   => 'featured-content',
-			'description' => __( 'Displays featured posts with thumbnails', 'gsfc' ),
-		);
+        $widget_ops = array(
+            'classname'   => 'featured-content',
+            'description' => __( 'Displays featured posts with thumbnails', 'gsfc' ),
+        );
 
-		$control_ops = array(
-			'id_base' => 'featured-content',
-			'width'   => 505,
-			'height'  => 350,
-		);
+        $control_ops = array(
+            'id_base' => 'featured-content',
+            'width'   => 505,
+            'height'  => 350,
+        );
         
         $name = __( 'Genesis Sandbox', 'gsfc' );
         if ( defined( 'CHILD_NAME' ) && true === apply_filters( 'gsfc_widget_name', false ) )
@@ -139,12 +139,12 @@ class GS_Featured_Content extends WP_Widget {
         elseif ( apply_filters( 'gsfc_widget_name', false ) )
             $name = apply_filters( 'gsfc_widget_name', false );
 
-		parent::__construct( 'featured-content', sprintf( __( '%s - Featured Content', 'gsfc' ), $name ), $widget_ops, $control_ops );
+        parent::__construct( 'featured-content', sprintf( __( '%s - Featured Content', 'gsfc' ), $name ), $widget_ops, $control_ops );
         
         
         GS_Featured_Content::add();
         do_action( 'gsfc_actions', $this );
-	}
+    }
     
     /**
      * Adds all Widget's Actions at once for easy removal.
@@ -346,13 +346,13 @@ class GS_Featured_Content extends WP_Widget {
      */
     public static function do_byline( $instance ) {
         if ( empty( $instance['show_byline'] ) || empty( $instance['post_info'] ) ) {
-			return;
-		}
+            return;
+        }
         
         $byline = '';
         if ( !empty( $instance['post_info'] ) ) {
             $byline = sprintf( '<p class="byline post-info">%s</p>', do_shortcode( esc_html( $instance['post_info'] ) ) );
-		}
+        }
         
         GS_Featured_Content::maybe_echo( $instance, 'gsfc_before_post_content', 'byline_position', 'before-title', $byline );
         GS_Featured_Content::maybe_echo( $instance, 'gsfc_post_content', 'byline_position', 'after-title', $byline );
@@ -394,11 +394,11 @@ class GS_Featured_Content extends WP_Widget {
         $link  = $instance['link_image_field'] && genesis_get_custom_field( $instance['link_image_field'] ) ? genesis_get_custom_field( $instance['link_image_field'] ) : get_permalink();
         
         $image = genesis_get_image( array(
-				'format'  => 'html',
-				'size'    => $instance['image_size'],
-				'context' => 'featured-post-widget',
-				'attr'    => genesis_parse_attr( 'gsfc-entry-image-widget', array( 'align' => $align, ) ),
-			) );
+                'format'  => 'html',
+                'size'    => $instance['image_size'],
+                'context' => 'featured-post-widget',
+                'attr'    => genesis_parse_attr( 'gsfc-entry-image-widget', array( 'align' => $align, ) ),
+            ) );
         
         $image = $instance['link_image'] == 1 ? sprintf( '<a href="%s" title="%s" class="%s">%s</a>', $link, the_title_attribute( 'echo=0' ), $align, $image ) : $image;
         
@@ -481,7 +481,7 @@ class GS_Featured_Content extends WP_Widget {
             $hclass = apply_filters( 'gsfc_entry_title_class', ' class="entry-title"' );
         } else {
             $hclass = '';
-		}
+        }
         
         printf( '<h2%s>%s%s%s</h2>', $hclass, $wrap_open, $title, $wrap_close );
     }
@@ -614,57 +614,57 @@ function gsfcSave(t) {
         $name = GS_Featured_Content::sanitize_transient( $name );
         return get_transient( $name );
     }
-	
-	/**
-	 * WP.com's VIP get_term by. Get all Term data from database by Term field and data.
-	 *
-	 * Warning: $value is not escaped for 'name' $field. You must do it yourself, if
-	 * required.
-	 *
-	 * The default $field is 'id', therefore it is possible to also use null for
-	 * field, but not recommended that you do so.
-	 *
-	 * If $value does not exist, the return value will be false. If $taxonomy exists
-	 * and $field and $value combinations exist, the Term will be returned.
-	 *
-	 * @since 1.1.3
-	 *
-	 * @uses get_term_by()
-	 * @uses wp_cache_get()
-	 * @uses wp_cache_set()
-	 *
-	 * @param string $field Either 'slug', 'name', 'id' (term_id), or 'term_taxonomy_id'
-	 * @param string|int $value Search for this term value
-	 * @param string $taxonomy Taxonomy Name
-	 * @param string $output Constant OBJECT, ARRAY_A, or ARRAY_N
-	 * @param string $filter Optional, default is raw or no WordPress defined filter will applied.
-	 * @return mixed Term Row from database. Will return false if $taxonomy does not exist or $term was not found.
-	 */
-	public static function get_term_by( $field, $value, $taxonomy, $output = OBJECT, $filter = 'raw' ) {
-		// ID lookups are cached
-		if ( 'id' == $field ) {
-			return get_term_by( $field, $value, $taxonomy, $output, $filter );
-		}
+    
+    /**
+     * WP.com's VIP get_term by. Get all Term data from database by Term field and data.
+     *
+     * Warning: $value is not escaped for 'name' $field. You must do it yourself, if
+     * required.
+     *
+     * The default $field is 'id', therefore it is possible to also use null for
+     * field, but not recommended that you do so.
+     *
+     * If $value does not exist, the return value will be false. If $taxonomy exists
+     * and $field and $value combinations exist, the Term will be returned.
+     *
+     * @since 1.1.3
+     *
+     * @uses get_term_by()
+     * @uses wp_cache_get()
+     * @uses wp_cache_set()
+     *
+     * @param string $field Either 'slug', 'name', 'id' (term_id), or 'term_taxonomy_id'
+     * @param string|int $value Search for this term value
+     * @param string $taxonomy Taxonomy Name
+     * @param string $output Constant OBJECT, ARRAY_A, or ARRAY_N
+     * @param string $filter Optional, default is raw or no WordPress defined filter will applied.
+     * @return mixed Term Row from database. Will return false if $taxonomy does not exist or $term was not found.
+     */
+    public static function get_term_by( $field, $value, $taxonomy, $output = OBJECT, $filter = 'raw' ) {
+        // ID lookups are cached
+        if ( 'id' == $field ) {
+            return get_term_by( $field, $value, $taxonomy, $output, $filter );
+        }
 
-		$cache_key = $field . '_' . md5( $value );
-		$term_id = wp_cache_get( $cache_key, 'get_term_by' );
+        $cache_key = $field . '_' . md5( $value );
+        $term_id = wp_cache_get( $cache_key, 'get_term_by' );
 
-		if ( false === $term_id ) {
-			$term = get_term_by( $field, $value, $taxonomy );
-			if ( $term && ! is_wp_error( $term ) )
-				wp_cache_set( $cache_key, $term->term_id, 'get_term_by' );
-			else
-				wp_cache_set( $cache_key, 0, 'get_term_by' ); // if we get an invalid value, let's cache it anyway
-		} else {
-			$term = get_term( $term_id, $taxonomy, $output, $filter );
-		}
+        if ( false === $term_id ) {
+            $term = get_term_by( $field, $value, $taxonomy );
+            if ( $term && ! is_wp_error( $term ) )
+                wp_cache_set( $cache_key, $term->term_id, 'get_term_by' );
+            else
+                wp_cache_set( $cache_key, 0, 'get_term_by' ); // if we get an invalid value, let's cache it anyway
+        } else {
+            $term = get_term( $term_id, $taxonomy, $output, $filter );
+        }
 
-		if ( is_wp_error( $term ) ) {
-			$term = false;
-		}
+        if ( is_wp_error( $term ) ) {
+            $term = false;
+        }
 
-		return $term;
-	}
+        return $term;
+    }
     
     /**
      * Sanitizes name & sets transient.
@@ -702,13 +702,13 @@ function gsfcSave(t) {
             GS_Featured_Content::action( 'gsfc_taxonomy_more', $instance );
             GS_Featured_Content::action( 'gsfc_' . $taxonomy . '_more', $instance );
             $term = GS_Featured_Content::get_term_by( 'slug', $posts_term['1'], $taxonomy );
-			printf(
-				'<p class="more-from-%1$s"><a href="%2$s" title="%3$s">%4$s</a></p>',
+            printf(
+                '<p class="more-from-%1$s"><a href="%2$s" title="%3$s">%4$s</a></p>',
                 $taxonomy,
-				esc_url( get_term_link( $posts_term['1'], $taxonomy ) ),
-				esc_attr( $term->name ),
-				esc_html( $instance['more_from_category_text'] )
-			);
+                esc_url( get_term_link( $posts_term['1'], $taxonomy ) ),
+                esc_attr( $term->name ),
+                esc_html( $instance['more_from_category_text'] )
+            );
         }
         
         GS_Featured_Content::action( 'gsfc_after_category_more', $instance );
@@ -859,8 +859,8 @@ function gsfcSave(t) {
     public static function get_image_size_options() {
         $sizes = genesis_get_additional_image_sizes();
         $image_size_opt['thumbnail'] = 'thumbnail ('. get_option( 'thumbnail_size_w' ) . 'x' . get_option( 'thumbnail_size_h' ) . ')';
-		foreach( ( array )$sizes as $name => $size ) 
-			$image_size_opt[ $name ] = esc_html( $name ) . ' (' . $size['width'] . 'x' . $size['height'] . ')';
+        foreach( ( array )$sizes as $name => $size ) 
+            $image_size_opt[ $name ] = esc_html( $name ) . ' (' . $size['width'] . 'x' . $size['height'] . ')';
         return $image_size_opt;
     }
     
@@ -1485,19 +1485,19 @@ function gsfcSave(t) {
         );
         
         $columns = array(
-			'col'  => array( $box, ),
+            'col'  => array( $box, ),
             'col1' => array(
                 $box_1,
                 $box_2,
                 $box_3,
                 $box_4,
             ),
-			'col2' => array(
+            'col2' => array(
                 $box_5,
                 $box_6,
                 $box_7,
             ),
-		);
+        );
         return apply_filters( 'gsfc_form_fields', $columns, GS_Featured_Content::$widget_instance, compact( "box_1", "box_2", "box_3", "box_4", "box_5", "box_6", "box_7" ) );
     }
     
@@ -1545,39 +1545,39 @@ function gsfcSave(t) {
         }
         return $random_string;
     }
-	
-	/**
-	 * Get a list of registered taxonomy objects.
-	 *
-	 * @package WordPress
-	 * @subpackage Taxonomy
-	 * @since 3.0.0
-	 * @uses $wp_taxonomies
-	 * @see register_taxonomy
-	 *
-	 * @param array $args An array of key => value arguments to match against the taxonomy objects.
-	 * @param string $output The type of output to return, either taxonomy 'names' or 'objects'. 'names' is the default.
-	 * @param string $operator The logical operation to perform. 'or' means only one element
-	 *  from the array needs to match; 'and' means all elements must match. The default is 'and'.
-	 * @return array A list of taxonomy names or objects
-	 */
-	protected static function get_taxonomies( $args = array(), $output = 'names', $operator = 'and' ) {
-		$cache_key  = 'gsfc_get_tax_' . md5( $value );
-		$taxonomies = wp_cache_get( $cache_key, 'get_taxonomies' );
+    
+    /**
+     * Get a list of registered taxonomy objects.
+     *
+     * @package WordPress
+     * @subpackage Taxonomy
+     * @since 3.0.0
+     * @uses $wp_taxonomies
+     * @see register_taxonomy
+     *
+     * @param array $args An array of key => value arguments to match against the taxonomy objects.
+     * @param string $output The type of output to return, either taxonomy 'names' or 'objects'. 'names' is the default.
+     * @param string $operator The logical operation to perform. 'or' means only one element
+     *  from the array needs to match; 'and' means all elements must match. The default is 'and'.
+     * @return array A list of taxonomy names or objects
+     */
+    protected static function get_taxonomies( $args = array(), $output = 'names', $operator = 'and' ) {
+        $cache_key  = 'gsfc_get_tax_' . md5( $value );
+        $taxonomies = wp_cache_get( $cache_key, 'get_taxonomies' );
 
-		if ( false === $taxonomies ) {
-			$taxonomies = get_taxonomies( $args, $output, $operator );
-			if ( $taxonomies && ! is_wp_error( $taxonomies ) ) {
-				wp_cache_set( $cache_key, $taxonomies, 'get_taxonomies', apply_filters( 'gsfc_get_taxonomies_cache_expires', 0 ) );
-			} else {
-				// if we get an invalid value, let's cache it anyway
-				wp_cache_set( $cache_key, array(), 'get_taxonomies', apply_filters( 'gsfc_get_taxonomies_cache_expires', 0 ) );
-			}
-		} else {
-			$taxonomies = get_taxonomies( $args, $output, $operator );
-		}
+        if ( false === $term_id ) {
+            $taxonomies = get_taxonomies( $args, $output, $operator );
+            if ( $taxonomies && ! is_wp_error( $taxonomies ) ) {
+                wp_cache_set( $cache_key, $taxonomies, 'get_taxonomies', apply_filters( 'gsfc_get_taxonomies_cache_expires', 0 ) );
+            } else {
+                // if we get an invalid value, let's cache it anyway
+                wp_cache_set( $cache_key, array(), 'get_taxonomies', apply_filters( 'gsfc_get_taxonomies_cache_expires', 0 ) );
+            }
+        } else {
+            $taxonomies = get_taxonomies( $args, $output, $operator );
+        }
         return $taxonomies;
-	}
+    }
     
     /**
      * Outputs the column fields.
@@ -1589,19 +1589,19 @@ function gsfcSave(t) {
     public static function do_columns( $instance, $columns, $obj ) {
         echo '<div class="gsfc-widget-body">';
         foreach( $columns as $column => $boxes ) {
-			if( 'col1' == $column )
+            if( 'col1' == $column )
                 $col_class = 'gsfc-left-box';
-			elseif( 'col2' == $column )
+            elseif( 'col2' == $column )
                 $col_class = 'gsfc-right-box';
             else
                 $col_class = 'gsfc-wide-box';
             printf( '<div class="%s">', $col_class );
             
-			foreach( $boxes as $box ) {
+            foreach( $boxes as $box ) {
                 $box_style = isset( $box['box_requires'] ) ? ' style="'. GS_Featured_Content::get_display_option( $instance, $box['box_requires'][0], $box['box_requires'][1], $box['box_requires'][2] ) .'"' : '';
-				printf( '<div class="gsfc-box"%s>', $box_style );
+                printf( '<div class="gsfc-box"%s>', $box_style );
             
-				foreach( $box as $field_id => $args ) {
+                foreach( $box as $field_id => $args ) {
                     if ( 'box_requires' == $field_id ) continue;
                     $data  = isset( $args['requires'] ) ? GS_Featured_Content::data_implode( $args['requires'] ) : '';
                     $style = '';
@@ -1613,8 +1613,8 @@ function gsfcSave(t) {
                         echo '<div ' . $style . ' class="' . $args['type'] . ' ' . $field_id . '" >';
                     }
                     
-					switch( $args['type'] ) {
-						case 'post_type_select' :
+                    switch( $args['type'] ) {
+                        case 'post_type_select' :
                             printf( '<label for="%1$s">%2$s</label><select onchange="gsfcSave(this)" id="%1$s" name="%3$s">',
                                 $obj->get_field_id( $field_id ),
                                 $args['label'],
@@ -1625,9 +1625,9 @@ function gsfcSave(t) {
                                 selected( esc_attr( $post_type ), $instance['post_type'], false ),
                                 __( 'Any', 'gsfc' )
                             );
-							
-							$post_types = GS_Featured_Content::get_post_types();
-							foreach ( $post_types as $post_type ) {
+                            
+                            $post_types = GS_Featured_Content::get_post_types();
+                            foreach ( $post_types as $post_type ) {
                                 $pt = get_post_type_object( $post_type );
                                 printf( '<option class="gs-pad-left-10" value="%s" %s>%s</option>',
                                     esc_attr( $post_type ),
@@ -1636,8 +1636,8 @@ function gsfcSave(t) {
                                 );
                             }
                                 
-							echo '</select>';
-							break;
+                            echo '</select>';
+                            break;
 
                         case 'page_select' :
                             printf( '<label for="%1$s">%2$s:</label><select id="%1$s" name="%3$s" onchange="gsfcSave(this)"><option value="" %4$s>%5$s</option>',
@@ -1656,10 +1656,10 @@ function gsfcSave(t) {
                                     esc_attr( $page->post_title )
                                 );
                                 
-							echo '</select>';
-							break;
-						
-						case 'select_taxonomy' :
+                            echo '</select>';
+                            break;
+                        
+                        case 'select_taxonomy' :
                             printf( '<label for="%1$s">%2$s:</label><select id="%1$s" name="%3$s" onchange="gsfcSave(this)"><option value="" class="gs-pad-left-10" %4$s>%5$s</option>',
                                 $obj->get_field_id( $field_id ),
                                 $args['label'],
@@ -1667,8 +1667,8 @@ function gsfcSave(t) {
                                 selected( '', $instance['posts_term'], false ),
                                 __( 'All Taxonomies and Terms', 'gsfc' )
                             );
-							
-                            $taxonomies = GS_Featured_Content::get_taxonomies( apply_filters( 'gsfc_get_taxonomies_args', $instance, $obj ), 'objects' );
+                            
+                            $taxonomies = GS_Featured_Content::get_taxonomies( apply_filters( 'gsfc_get_taxonomies_args', array( 'public' => true ), $instance, $obj ), 'objects' );
                             $taxonomies = array_filter( $taxonomies, array( __CLASS__, 'exclude_taxonomies' ) );
 
                             foreach ( $taxonomies as $taxonomy ) {
@@ -1694,19 +1694,19 @@ function gsfcSave(t) {
                             }
                             
                             echo '</select>';
-							break;
-							
-						case 'text' :
-							echo $args['description'] ? wpautop( $args['description'] ) : '';
+                            break;
+                            
+                        case 'text' :
+                            echo $args['description'] ? wpautop( $args['description'] ) : '';
                             printf( '<label for="%1$s">%2$s:</label>', $obj->get_field_id( $field_id ), $args['label'] );
                             printf( '<input type="text" id="%s" name="%s" value="%s" class="gs-widefat" />',
                                 $obj->get_field_id( $field_id ),
                                 $obj->get_field_name( $field_id ),
                                 esc_attr( $instance[$field_id] )
                             );
-							break;
-						
-						case 'text_small' :
+                            break;
+                        
+                        case 'text_small' :
                             printf( '<label for="%1$s">%2$s:</label>', $obj->get_field_id( $field_id ), $args['label'] );
                             printf( '<input type="text" class="gsfc-small" id="%s" name="%s" value="%s" />%s',
                                 $obj->get_field_id( $field_id ),
@@ -1715,9 +1715,9 @@ function gsfcSave(t) {
                                 $args['description']
                             );
                             
-							break;
-							
-						case 'select' :
+                            break;
+                            
+                        case 'select' :
                             printf( '<label for="%1$s">%2$s:</label><select id="%1$s" name="%3$s" onchange="gsfcSave(this)">',
                                 $obj->get_field_id( $field_id ),
                                 $args['label'],
@@ -1732,9 +1732,9 @@ function gsfcSave(t) {
                                     );
                             
                             echo '</select>';
-							break;
-							
-						case 'checkbox' :
+                            break;
+                            
+                        case 'checkbox' :
                             printf( '<input type="checkbox" id="%1$s" name="%2$s" value="1" class="widget-control-save" %3$s />',
                                 $obj->get_field_id( $field_id ),
                                 $obj->get_field_name( $field_id ),
@@ -1743,35 +1743,35 @@ function gsfcSave(t) {
                             );
                             printf( '<label for="%1$s">%2$s</label>', $obj->get_field_id( $field_id ), $args['label'] );
                             echo $args['description'] ? wpautop( $args['description'] ) : '';
-							break;
+                            break;
                         case 'p' :
                         case 'description' :
                             echo $args['description'] ? wpautop( $args['description'] ) : '';
                             break;
                         default:
                             do_action( 'gsfc_custom_field_' . $args['type'], $instance, $obj ); 
-					}
+                    }
                     echo '</div>';
 
-				}
-				
-				echo '</div>';
-			}
-			
-			echo '</div>';
-				
-		}
+                }
+                
+                echo '</div>';
+            }
+            
+            echo '</div>';
+                
+        }
         echo '</div>';
     }
     
     /**
-	 * Outputs the form fields.
-	 *
-	 * @uses do_columns()
-	 *
-	 * @param array $instance Current settings
-	 * @param array $object Current GS_Featured_Content object
-	 */
+     * Outputs the form fields.
+     *
+     * @uses do_columns()
+     *
+     * @param array $instance Current settings
+     * @param array $object Current GS_Featured_Content object
+     */
     public static function do_form_fields( $instance, $object ) {
         GS_Featured_Content::$widget_instance = $instance;
         
@@ -1781,17 +1781,17 @@ function gsfcSave(t) {
         
     }
     
-	/**
-	 * Echo the settings update form.
-	 *
-	 * @since 0.1.8
-	 *
-	 * @param array $instance Current settings
-	 */
-	public function form( $instance ) {
+    /**
+     * Echo the settings update form.
+     *
+     * @since 0.1.8
+     *
+     * @param array $instance Current settings
+     */
+    public function form( $instance ) {
         
-		//* Merge with defaults
-		$instance = wp_parse_args( (array) $instance, $this->defaults );
+        //* Merge with defaults
+        $instance = wp_parse_args( (array) $instance, $this->defaults );
         GS_Featured_Content::$widget_instance = $instance;
         
         //* Title Field
@@ -1859,12 +1859,12 @@ function gsfcSave(t) {
     }
     
     /**
-	 * Sets custom field to a default.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param array $instance Current settings
-	 */
+     * Sets custom field to a default.
+     *
+     * @since 1.0.0
+     *
+     * @param array $instance Current settings
+     */
     public static function set_custom_field( $instance ) {
     
         $cf = isset( $instance['title'] ) ? sanitize_title_with_dashes( $instance['title'] ) : '';
@@ -1911,27 +1911,27 @@ function gsfcSave(t) {
         return $widget_title;
     }
     
-	/**
-	 * Echo the widget content.
-	 *
-	 * @since 0.1.8
-	 *
-	 * @param array $args Display arguments including before_title, after_title, before_widget, and after_widget.
-	 * @param array $instance The settings for the particular instance of the widget.
-	 */
-	public function widget( $args, $instance ) {
+    /**
+     * Echo the widget content.
+     *
+     * @since 0.1.8
+     *
+     * @param array $args Display arguments including before_title, after_title, before_widget, and after_widget.
+     * @param array $instance The settings for the particular instance of the widget.
+     */
+    public function widget( $args, $instance ) {
 
         GS_Featured_Content::$widget_instance &= $instance;
-		global $wp_query, $_genesis_displayed_ids, $gs_counter;
+        global $wp_query, $_genesis_displayed_ids, $gs_counter;
 
-		extract( $args );
+        extract( $args );
         $instance['widget_args'] = $args;
         
         //* Add current page ID
         $_genesis_displayed_ids[] = get_the_ID();
         
-		//* Merge with defaults
-		$instance = wp_parse_args( (array) $instance, $this->defaults );
+        //* Merge with defaults
+        $instance = wp_parse_args( (array) $instance, $this->defaults );
 
         do_action( 'gsfc_before_widget', $instance );
         GS_Featured_Content::before_widget( $before_widget, $instance['custom_field'] );
@@ -1942,10 +1942,10 @@ function gsfcSave(t) {
         else
             remove_filter( 'post_limits', array( 'GS_Featured_Content', 'post_limit' ) );
 
-		//* Set up the author bio
-		if ( ! empty( $instance['title'] ) ) {
+        //* Set up the author bio
+        if ( ! empty( $instance['title'] ) ) {
             do_action( 'gsfc_before_widget_title', $instance );
-			echo $before_title . apply_filters( 'gsfc_widget_title', apply_filters( 'widget_title', $instance['title'], $instance, $this->id_base ), $instance, $this->id_base ) . $after_title;
+            echo $before_title . apply_filters( 'gsfc_widget_title', apply_filters( 'widget_title', $instance['title'], $instance, $this->id_base ), $instance, $this->id_base ) . $after_title;
             do_action( 'gsfc_after_widget_title', $instance );
         }
         
@@ -2008,7 +2008,7 @@ function gsfcSave(t) {
         }
         
         //* Exclude displayed IDs from this loop?
-		if ( ! empty( $instance['exclude_displayed'] ) ) {
+        if ( ! empty( $instance['exclude_displayed'] ) ) {
             if ( isset( $q_args['post__not_in'] ) && is_array( $q_args['post__not_in'] ) )
                 $q_args['post__not_in'] = array_unique( array_merge( $q_args['post__not_in'], (array) $_genesis_displayed_ids ) );
             else
@@ -2047,7 +2047,7 @@ function gsfcSave(t) {
         $query_args = apply_filters( 'gsfc_query_args', $query_args, $instance );
         
         // get transient
-		if ( !empty( $instance['optimize'] ) && !empty( $instance['custom_field'] ) ) {
+        if ( !empty( $instance['optimize'] ) && !empty( $instance['custom_field'] ) ) {
             if ( ! empty( $instance['delete_transients'] ) ) {
                 GS_Featured_Content::delete_transient( 'gsfc_main_' . $instance['custom_field'] );
             }
@@ -2065,7 +2065,7 @@ function gsfcSave(t) {
             $gsfc_query = apply_filters( 'gsfc_query_results', new WP_Query( $query_args ) );
         }
 
-		if ( $gsfc_query->have_posts() ) : 
+        if ( $gsfc_query->have_posts() ) : 
             while ( $gsfc_query->have_posts() ) : $gsfc_query->the_post();
                 $_genesis_displayed_ids[] = get_the_ID();
 
@@ -2081,37 +2081,37 @@ function gsfcSave(t) {
 
         GS_Featured_Content::action( 'gsfc_after_loop', $instance );
 
-		//* Restore original query
-		wp_reset_query();
+        //* Restore original query
+        wp_reset_query();
         
         GS_Featured_Content::action( 'gsfc_after_loop_reset', $instance );
 
-		echo $after_widget;
+        echo $after_widget;
         remove_filter( 'post_class', array( 'GS_Featured_Content', 'post_class' ) );
         remove_filter( 'post_limits', array( 'GS_Featured_Content', 'post_limit' ) );
 
-	}
+    }
     
     /**
-	 * Update a particular instance.
-	 *
-	 * This function should check that $new_instance is set correctly.
-	 * The newly calculated value of $instance should be returned.
-	 * If "false" is returned, the instance won't be saved/updated.
-	 *
-	 * @since 0.1.8
-	 *
-	 * @param array $new_instance New settings for this instance as input by the user via form()
-	 * @param array $old_instance Old settings for this instance
-	 * @return array Settings to save or bool false to cancel saving
-	 */
-	public function update( $new_instance, $old_instance ) {
-		$new_instance['excerpt_cutoff'] = '...' == $new_instance['excerpt_cutoff'] ? '&hellip;' : $new_instance['excerpt_cutoff'];
-		$new_instance['title_cutoff']   = '...' == $new_instance['title_cutoff'] ? '&hellip;' : $new_instance['title_cutoff'];
-		$new_instance['title']          = strip_tags( $new_instance['title'] );
-		$new_instance['more_text']      = strip_tags( $new_instance['more_text'] );
-		$new_instance['post_info']      = wp_kses_post( $new_instance['post_info'] );
-		$new_instance['custom_field']   = $new_instance['custom_field'] ? sanitize_title_with_dashes( $new_instance['custom_field'] ) : GS_Featured_Content::set_custom_field( $new_instance );
+     * Update a particular instance.
+     *
+     * This function should check that $new_instance is set correctly.
+     * The newly calculated value of $instance should be returned.
+     * If "false" is returned, the instance won't be saved/updated.
+     *
+     * @since 0.1.8
+     *
+     * @param array $new_instance New settings for this instance as input by the user via form()
+     * @param array $old_instance Old settings for this instance
+     * @return array Settings to save or bool false to cancel saving
+     */
+    public function update( $new_instance, $old_instance ) {
+        $new_instance['excerpt_cutoff'] = '...' == $new_instance['excerpt_cutoff'] ? '&hellip;' : $new_instance['excerpt_cutoff'];
+        $new_instance['title_cutoff']   = '...' == $new_instance['title_cutoff'] ? '&hellip;' : $new_instance['title_cutoff'];
+        $new_instance['title']          = strip_tags( $new_instance['title'] );
+        $new_instance['more_text']      = strip_tags( $new_instance['more_text'] );
+        $new_instance['post_info']      = wp_kses_post( $new_instance['post_info'] );
+        $new_instance['custom_field']   = $new_instance['custom_field'] ? sanitize_title_with_dashes( $new_instance['custom_field'] ) : GS_Featured_Content::set_custom_field( $new_instance );
         
         GS_Featured_Content::delete_transient( 'gsfc_extra_' . $new_instance['custom_field'] );
         if ( $new_instance['custom_field'] != $old_instance['custom_field'] )
@@ -2121,9 +2121,9 @@ function gsfcSave(t) {
         if ( $new_instance['custom_field'] != $old_instance['custom_field'] )
             GS_Featured_Content::delete_transient( 'gsfc_main_' . $old_instance['custom_field'] );
         
-		return apply_filters( 'gsfc_update', $new_instance, $old_instance );
+        return apply_filters( 'gsfc_update', $new_instance, $old_instance );
 
-	}
+    }
     
 }
 }
